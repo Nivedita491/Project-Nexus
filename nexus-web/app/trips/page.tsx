@@ -1,34 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 import { subscribeToTable } from "@/lib/realtime";
 import { TripCard } from "@/components/cards/TripCard";
 import { Plane } from "lucide-react";
+import { useTrips } from "@/lib/hooks/useData";
 
-async function fetchTrips() {
-    const { data, error } = await supabase.from("trips").select("*").order("date", { ascending: true });
-    if (error) throw error;
-    return data || [];
-}
+import { SkeletonCard } from "@/components/layout/SkeletonCard";
 
 export default function TripsPage() {
     const queryClient = useQueryClient();
 
-    const { data: trips, isLoading } = useQuery({
-        queryKey: ["trips"],
-        queryFn: fetchTrips,
-    });
+    const { data: trips, isLoading } = useTrips();
 
-    useEffect(() => {
-        const channel = subscribeToTable("trips", () => {
-            queryClient.invalidateQueries({ queryKey: ["trips"] });
-        });
-        return () => {
-            channel.unsubscribe();
-        };
-    }, [queryClient]);
+
+    // Realtime subscription handled globally by RealtimeManager
+
 
     return (
         <div className="p-4 md:p-8">
@@ -41,8 +29,8 @@ export default function TripsPage() {
             </header>
 
             {isLoading ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 animate-pulse">
-                    {[1, 2, 3].map(i => <div key={i} className="h-40 bg-slate-800/50 rounded-lg"></div>)}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                    {[1, 2, 3].map(i => <SkeletonCard key={i} className="h-48" />)}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">

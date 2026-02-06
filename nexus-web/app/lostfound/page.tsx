@@ -1,34 +1,19 @@
 "use client";
 
 import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 import { subscribeToTable } from "@/lib/realtime";
 import { LostCard } from "@/components/cards/LostCard";
 import { Search } from "lucide-react";
-
-async function fetchLostItems() {
-    const { data, error } = await supabase.from("lost_items").select("*").order("created_at", { ascending: false });
-    if (error) throw error;
-    return data || [];
-}
+import { useLostItems } from "@/lib/hooks/useData";
+import { SkeletonCard } from "@/components/layout/SkeletonCard";
 
 export default function LostFoundPage() {
     const queryClient = useQueryClient();
 
-    const { data: items, isLoading } = useQuery({
-        queryKey: ["lost_items"],
-        queryFn: fetchLostItems,
-    });
+    const { data: items, isLoading } = useLostItems();
 
-    useEffect(() => {
-        const channel = subscribeToTable("lost_items", () => {
-            queryClient.invalidateQueries({ queryKey: ["lost_items"] });
-        });
-        return () => {
-            channel.unsubscribe(); // Correct method per supabase js v2 is unsubscribe() on channel? No, supabase.removeChannel(channel). But channel.unsubscribe() exists too usually.
-        };
-    }, [queryClient]);
+    // Realtime subscription handled globally by RealtimeManager
 
     return (
         <div className="p-4 md:p-8">
@@ -41,8 +26,8 @@ export default function LostFoundPage() {
             </header>
 
             {isLoading ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 animate-pulse">
-                    {[1, 2, 3, 4].map(i => <div key={i} className="h-48 bg-slate-800/50 rounded-lg"></div>)}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    {[1, 2, 3, 4].map(i => <SkeletonCard key={i} className="h-64" />)}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

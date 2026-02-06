@@ -29,3 +29,42 @@ export function subscribeToTable(
 
     return channel;
 }
+
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+
+/**
+ * Hook to globally subscribe to Supabase tables and invalidate React Query cache.
+ * This makes realtime updates "invisible" to the rest of the app.
+ */
+export function useRealtimeSync() {
+    const queryClient = useQueryClient();
+
+    useEffect(() => {
+        const subscriptions = [
+            subscribeToTable("lost_items", () => {
+                queryClient.invalidateQueries({ queryKey: ["lost_items"] });
+            }),
+            subscribeToTable("listings", () => {
+                queryClient.invalidateQueries({ queryKey: ["listings"] });
+            }),
+            subscribeToTable("trips", () => {
+                queryClient.invalidateQueries({ queryKey: ["trips"] });
+            }),
+            subscribeToTable("notifications", () => {
+                queryClient.invalidateQueries({ queryKey: ["notifications"] });
+                queryClient.invalidateQueries({ queryKey: ["notifications_count"] });
+            }),
+            subscribeToTable("classes", () => {
+                queryClient.invalidateQueries({ queryKey: ["classes"] });
+            }),
+            subscribeToTable("assignments", () => {
+                queryClient.invalidateQueries({ queryKey: ["assignments"] });
+            })
+        ];
+
+        return () => {
+            subscriptions.forEach((sub) => sub.unsubscribe());
+        };
+    }, [queryClient]);
+}

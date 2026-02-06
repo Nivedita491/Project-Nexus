@@ -14,6 +14,9 @@ async function fetchClasses() {
     return data || [];
 }
 
+import { GlassCard } from "@/components/layout/GlassCard";
+import { SkeletonCard } from "@/components/layout/SkeletonCard";
+
 export function TimetableCard() {
     const { data: classes, isLoading, error } = useQuery({
         queryKey: ["classes"],
@@ -21,7 +24,7 @@ export function TimetableCard() {
     });
 
     return (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 shadow-sm backdrop-blur-sm">
+        <GlassCard>
             <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold flex items-center gap-2 text-slate-100">
                     <Calendar className="h-5 w-5 text-blue-500" />
@@ -30,9 +33,9 @@ export function TimetableCard() {
             </div>
 
             {isLoading ? (
-                <div className="space-y-3 animate-pulse">
-                    <div className="h-12 bg-slate-800/50 rounded"></div>
-                    <div className="h-12 bg-slate-800/50 rounded"></div>
+                <div className="space-y-4">
+                    <SkeletonCard className="h-20" />
+                    <SkeletonCard className="h-20" />
                 </div>
             ) : error ? (
                 <div className="text-red-400">Failed to load schedule</div>
@@ -59,6 +62,6 @@ export function TimetableCard() {
                     ))}
                 </div>
             )}
-        </div>
+        </GlassCard>
     );
 }

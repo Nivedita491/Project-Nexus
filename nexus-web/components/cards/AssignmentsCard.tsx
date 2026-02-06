@@ -15,6 +15,9 @@ async function fetchAssignments() {
     return data || [];
 }
 
+import { GlassCard } from "@/components/layout/GlassCard";
+import { SkeletonCard } from "@/components/layout/SkeletonCard";
+
 export function AssignmentsCard() {
     const { data: assignments, isLoading, error } = useQuery({
         queryKey: ["assignments"],
@@ -22,7 +25,7 @@ export function AssignmentsCard() {
     });
 
     return (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 shadow-sm backdrop-blur-sm">
+        <GlassCard>
             <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold flex items-center gap-2 text-slate-100">
                     <BookOpen className="h-5 w-5 text-orange-500" />
@@ -34,9 +37,9 @@ export function AssignmentsCard() {
             </div>
 
             {isLoading ? (
-                <div className="space-y-3 animate-pulse">
-                    <div className="h-10 bg-slate-800/50 rounded"></div>
-                    <div className="h-10 bg-slate-800/50 rounded"></div>
+                <div className="space-y-4">
+                    <SkeletonCard className="h-16" />
+                    <SkeletonCard className="h-16" />
                 </div>
             ) : error ? (
                 <div className="text-red-400">Failed to load assignments</div>
@@ -55,6 +58,6 @@ export function AssignmentsCard() {
                     ))}
                 </div>
             )}
-        </div>
+        </GlassCard>
     );
 }

@@ -1,34 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 import { subscribeToTable } from "@/lib/realtime";
 import { ProductCard } from "@/components/cards/ProductCard";
 import { ShoppingBag } from "lucide-react";
+import { useListings } from "@/lib/hooks/useData";
 
-async function fetchListings() {
-    const { data, error } = await supabase.from("listings").select("*").order("created_at", { ascending: false });
-    if (error) throw error;
-    return data || [];
-}
+import { SkeletonCard } from "@/components/layout/SkeletonCard";
 
 export default function MarketplacePage() {
     const queryClient = useQueryClient();
 
-    const { data: listings, isLoading } = useQuery({
-        queryKey: ["listings"],
-        queryFn: fetchListings,
-    });
+    const { data: listings, isLoading } = useListings();
 
-    useEffect(() => {
-        const channel = subscribeToTable("listings", () => {
-            queryClient.invalidateQueries({ queryKey: ["listings"] });
-        });
-        return () => {
-            channel.unsubscribe();
-        };
-    }, [queryClient]);
+
+    // Realtime subscription handled globally by RealtimeManager
+
 
     return (
         <div className="p-4 md:p-8">
@@ -41,8 +29,8 @@ export default function MarketplacePage() {
             </header>
 
             {isLoading ? (
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 animate-pulse">
-                    {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-48 bg-slate-800/50 rounded-lg"></div>)}
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    {[1, 2, 3, 4, 5].map(i => <SkeletonCard key={i} className="h-64" />)}
                 </div>
             ) : (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">

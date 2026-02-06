@@ -1,5 +1,7 @@
 import { TimetableCard } from "@/components/cards/TimetableCard";
 import { AssignmentsCard } from "@/components/cards/AssignmentsCard";
+import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
+import { HeroAI } from "@/components/dashboard/HeroAI";
 import { Bell } from "lucide-react";
 
 export default function DashboardPage() {
@@ -16,23 +18,31 @@ export default function DashboardPage() {
                 </div>
             </header>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <section className="space-y-4">
-                    <TimetableCard />
-                </section>
+            <HeroAI />
 
-                <section className="space-y-4">
-                    <AssignmentsCard />
-                </section>
+            <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+                {/* Main Content Area */}
+                <div className="space-y-6">
+                    <section>
+                        <TimetableCard />
+                    </section>
 
-                <section className="space-y-4">
-                    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 shadow-sm backdrop-blur-sm">
-                        <h2 className="text-lg font-semibold mb-4 text-white">Exam Alerts</h2>
-                        <div className="p-4 bg-yellow-900/20 text-yellow-200 border border-yellow-700/30 rounded-lg text-sm">
-                            Midterms starting next week. Check your schedule.
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <AssignmentsCard />
+
+                        <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 shadow-sm backdrop-blur-sm">
+                            <h2 className="text-lg font-semibold mb-4 text-white">Exam Alerts</h2>
+                            <div className="p-4 bg-yellow-900/20 text-yellow-200 border border-yellow-700/30 rounded-lg text-sm">
+                                Midterms starting next week. Check your schedule.
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
+
+                {/* Right Sidebar - Activity Feed */}
+                <aside className="lg:h-full">
+                    <ActivityFeed />
+                </aside>
             </div>
         </div>
     );
